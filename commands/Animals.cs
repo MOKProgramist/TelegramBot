@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Telegram.Bot.Types;
-using Telegram.Bot;
-using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
-
-namespace TelegramBot.commands
+﻿namespace TelegramBot.Commands
 {
+    using Telegram.Bot;
+    using Telegram.Bot.Types;
+    using Telegram.Bot.Types.Enums;
+    using Telegram.Bot.Types.ReplyMarkups;
+
     internal class Animals
     {
         // Команда с показом кошки
-        static public async Task Cat(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
+        public static async Task Cat(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
         {
             int messageId = message.MessageId | 0;
             var chatId = message.Chat.Id;

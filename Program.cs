@@ -7,7 +7,8 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-using TelegramBot.commands;
+using TelegramBot.commands.Animals;
+using TelegramBot.commands.Starts;
 
 var botClient = new TelegramBotClient("5459925148:AAHf1xcPBrwFHo_Q9MuNt_TuTCGgElDH1qE");
 
@@ -37,19 +38,31 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
 {
     Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(update));
     // Only process Message updates: https://core.telegram.org/bots/api#message
+    if (update.Type is UpdateType.CallbackQuery)
+    {
+        if (update.CallbackQuery is not { } callback)
+            return;
+        await BotCommandCallbackQuery(botClient, callback, cancellationToken);
+    }
     if (update.Message is not { } message)
         return;
     // Only process text messages
     if (message.Text is not { } messageText)
         return;
 
-    int messageId = message.MessageId | 0;
-
     var chatId = message.Chat.Id;
     var userInfo = $"{message?.From?.FirstName} {message?.From?.LastName}" ?? "Не указано";
 
     Console.WriteLine($"Received a '{messageText}' message in chat {chatId} ({userInfo}).");
+    await BotCommandMessage(botClient, message, cancellationToken);
+    return;
+}
 
+async Task BotCommandMessage(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
+{
+    // Only process text messages
+    if (message.Text is not { } messageText)
+        return;
     // Начальная команда
     if (messageText == "/start")
     {
@@ -59,13 +72,25 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     {
         await Animals.Cat(botClient, message, cancellationToken);
         return;
+    } else if (messageText.ToLower() == "рыбка")
+    {
+        await Animals.Cat(botClient, message, cancellationToken);
     }
     else
     {
-        await botClient.SendTextMessageAsync(
-            chatId: chatId,
-            text: $"{userInfo}, прости, такой команды пока нет.",
-            cancellationToken: cancellationToken);
+        await Starts.NotCommand(botClient, message, cancellationToken);
+        return;
+    }
+}
+
+async Task BotCommandCallbackQuery(ITelegramBotClient botClient, CallbackQuery callbackQuery, CancellationToken cancellationToken)
+{
+    // Only process text messages
+    if (callbackQuery.Data is not { } messageText)
+        return;
+    if (messageText.ToLower() == "котик")
+    {
+        await Animals.Cat(botClient, callbackQuery, cancellationToken);
         return;
     }
 }
