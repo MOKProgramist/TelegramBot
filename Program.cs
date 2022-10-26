@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using DotNetEnv;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
@@ -7,10 +8,13 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
+using TelegramBot;
 using TelegramBot.commands.Animals;
 using TelegramBot.commands.Starts;
 
-var botClient = new TelegramBotClient("5459925148:AAHf1xcPBrwFHo_Q9MuNt_TuTCGgElDH1qE");
+// 5459925148:AAHf1xcPBrwFHo_Q9MuNt_TuTCGgElDH1qE
+if (string.IsNullOrEmpty(Config.TelegramToken)) throw new Exception("Не указан токен бота.");
+var botClient = new TelegramBotClient(Config.TelegramToken);
 
 using var cts = new CancellationTokenSource();
 
@@ -74,7 +78,7 @@ async Task BotCommandMessage(ITelegramBotClient botClient, Message message, Canc
         return;
     } else if (messageText.ToLower() == "рыбка")
     {
-        await Animals.Cat(botClient, message, cancellationToken);
+        await Animals.Fish(botClient, message, cancellationToken);
     }
     else
     {
@@ -92,8 +96,14 @@ async Task BotCommandCallbackQuery(ITelegramBotClient botClient, CallbackQuery c
     {
         await Animals.Cat(botClient, callbackQuery, cancellationToken);
         return;
+    } else {
+
+    if (messageText.ToLower() == "рыбка")
+        {
+            await Animals.Fish(botClient, callbackQuery, cancellationToken);
+        }
     }
-}
+} 
 
 Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
 {
