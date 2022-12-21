@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace TelegramBot.core.types
 {
-    internal interface IContextCommand
+    internal interface IHandlerCommand
     {
-        string Name { get; set; } // команда
-        string[] Body { get; set; } // команда
+        object Context { get; set; }
+        string Bot { get; set; }
     }
 }
